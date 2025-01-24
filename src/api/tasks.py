@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from fastapi import Request
@@ -15,36 +15,34 @@ router = APIRouter(
 )
 
 
-@router.post("/", summary="Создание новой задачи")
+# TODO разделить все на сервисы и репозитории (как это сделано у юзера)
+
+@router.post("/create", summary="Создание новой задачи")
 async def create_task(
-    data: TaskCreateSchema,
-    photo: UploadFile = File(...),
-    session: Session = Depends(get_db_session),
+        request: Request,
+        data: TaskCreateSchema,
+        uploaded_file: UploadFile,
+        session: Session = Depends(get_db_session),
 ):
     """
     Эндпоинт для создания задачи. Сохраняет фото в локальной папке и записывает задачу в базу данных.
     """
-    if not photo.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Uploaded file must be an image.")
-
-    unique_filename = f"{uuid.uuid4().hex}_{photo.filename}"
+    unique_filename = f"{uuid.uuid4().hex}_{uploaded_file.filename}"
     file_path = UPLOAD_FOLDER / unique_filename
 
     try:
         with open(file_path, "wb") as f:
-            content = await photo.read()
+            content = await uploaded_file.read()
             f.write(content)
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to save file.")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=e)
 
-    # SQL для вставки задачи
     insert_query = text("""
         INSERT INTO tasks (description, photo_path, value, status, user_id, created_at)
         VALUES (:description, :photo_path, :value, 'pending', :user_id, NOW())
         RETURNING id, description, photo_path, value, status, created_at
     """)
 
-    # Выполняем запрос
     try:
         result = session.execute(insert_query, {
             "description": data.description,
@@ -56,9 +54,9 @@ async def create_task(
         task = result.fetchone()
     except Exception as e:
         session.rollback()
-        raise HTTPException(status_code=500, detail="Failed to create task in database.")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="Failed to create task in database.")
 
-    # Возвращаем данные созданной задачи
     return {
         "id": task.id,
         "description": task.description,
@@ -71,8 +69,8 @@ async def create_task(
 
 @router.get("/", summary="Получение задач со статусом PENDING")
 async def get_pending_tasks(
-    request: Request,
-    session: Session = Depends(get_db_session),
+        request: Request,
+        session: Session = Depends(get_db_session),
 ):
     query = text("""
         SELECT 
@@ -105,3 +103,33 @@ async def get_pending_tasks(
         })
 
     return {"tasks": formatted_tasks}
+
+
+# TODO переписать ручку так, чтобы она при НЕ выполнении условия if status not in ["approved", "rejected"] удаляла из
+#  БД таску. Тоесть если переданный статус задачи approved или rejected, то удалить ее из БД.
+
+@router.patch("/tasks/{task_id}")
+async def update_task_status(
+        task_id: int,
+        status: str,
+        session: Session = Depends(get_db_session)
+):
+    task = session.execute(
+        text("SELECT * FROM tasks WHERE id = :task_id"),
+        {"task_id": task_id}
+    ).fetchone()
+
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    if status not in ["approved", "rejected"]:
+        raise HTTPException(status_code=400, detail="Invalid status")
+
+    session.execute(
+        text("UPDATE tasks SET status = :status WHERE id = :task_id"),
+        {"status": status, "task_id": task_id}
+    )
+    session.commit()
+
+
+    return {"message": "сююю"}

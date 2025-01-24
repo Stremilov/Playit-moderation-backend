@@ -12,7 +12,7 @@ class StatusEnum(enum.Enum):
 
 class TaskCreateSchema(BaseModel):
     user_id: int
-    description: int
+    description: str
     status: StatusEnum
 
 

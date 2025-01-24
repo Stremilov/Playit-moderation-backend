@@ -38,3 +38,5 @@ Thumbs.db
 # Игнорируем временный файл с покрытием тестов с библиотеки pytest
 .coverage
 .idea
+db.db
+uploads
