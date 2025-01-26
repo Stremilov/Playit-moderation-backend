@@ -1,16 +1,12 @@
 from fastapi import APIRouter, Request, Depends
 from sqlalchemy.orm import Session
 
-from src.api.responses import (
-    update_user_balance_responses
-)
-from src.db.db import get_db_session
+from schemas.BaseRasponse import BaseResponse
+from src.api.responses import update_user_balance_responses
+from src.core.db import get_db_session
 from src.services.users import UserService
 
-router = APIRouter(
-    prefix="/users",
-    tags=["Users"]
-)
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.put(
@@ -26,12 +22,14 @@ router = APIRouter(
     - Изменяет баланс пользователя как в положительную так и отрицательную сторону (нужно передать или 100 или -100 к примеру)
     - Возвращает все данные пользователя
     """,
-    responses=update_user_balance_responses
+    responses=update_user_balance_responses,
 )
 async def manage_balance(
-        user_id: int,
-        value: int,
-        request: Request,
-        session: Session = Depends(get_db_session),
+    user_id: int,
+    value: int,
+    request: Request,
+    session: Session = Depends(get_db_session),
 ):
-    return await UserService.manage_user_balance(request=request, session=session, value=value, user_id=user_id)
+    return await UserService.manage_user_balance(
+        request=request, session=session, value=value, user_id=user_id
+    )

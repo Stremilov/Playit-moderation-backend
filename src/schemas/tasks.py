@@ -1,7 +1,9 @@
 import enum
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, EmailStr
+from typing import Optional, List
+from pydantic import BaseModel
+
+from schemas.BaseRasponse import TaskBaseResponse
 
 
 class StatusEnum(enum.Enum):
@@ -13,7 +15,7 @@ class StatusEnum(enum.Enum):
 class TaskCreateSchema(BaseModel):
     user_id: int
     description: str
-    status: StatusEnum
+    value: int
 
 
 class TaskUpdateSchema(BaseModel):
@@ -24,11 +26,19 @@ class TaskUpdateSchema(BaseModel):
 
 class TaskSchema(BaseModel):
     id: int
-    user_id: int
     description: str
+    photo_path: str
+    value: int
     status: StatusEnum
     created_at: datetime
-    updated_at: datetime
 
     class Config:
         from_attributes = True
+
+
+class TaskRead(TaskBaseResponse):
+    task: TaskSchema
+
+
+class TaskListRead(TaskBaseResponse):
+    task: List[TaskSchema]

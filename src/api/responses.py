@@ -16,13 +16,13 @@ update_user_balance_responses = {
                                 "balance": 100,
                                 "role": "USER",
                                 "done_tasks": 10,
-                                "group_number": "1A"
-                            }
-                        }
+                                "group_number": "1A",
+                            },
+                        },
                     }
                 }
             }
-        }
+        },
     },
     401: {
         "description": "Пользователь не авторизован",
@@ -31,13 +31,11 @@ update_user_balance_responses = {
                 "examples": {
                     "not_authorized": {
                         "summary": "JWT-токен отсутствует или невалиден",
-                        "value": {
-                            "detail": "Не авторизован"
-                        }
+                        "value": {"detail": "Не авторизован"},
                     }
                 }
             }
-        }
+        },
     },
     404: {
         "description": "Пользователь не найден",
@@ -46,13 +44,11 @@ update_user_balance_responses = {
                 "examples": {
                     "user_not_found": {
                         "summary": "Пользователь не найден в базе данных",
-                        "value": {
-                            "detail": "Пользователь не найден"
-                        }
+                        "value": {"detail": "Пользователь не найден"},
                     }
                 }
             }
-        }
+        },
     },
     500: {
         "description": "Внутренняя ошибка сервера",
@@ -63,10 +59,10 @@ update_user_balance_responses = {
                         "summary": "Неожиданная ошибка",
                         "value": {
                             "detail": "Произошла непредвиденная ошибка: <тип ошибки>"
-                        }
+                        },
                     }
                 }
             }
-        }
-    }
+        },
+    },
 }
