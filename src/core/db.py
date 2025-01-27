@@ -7,7 +7,7 @@ import logging
 
 # Database configuration for connection
 # DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-DATABASE_URL = "sqlite:///core.core"
+DATABASE_URL = "sqlite:///core.db"
 engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
@@ -44,6 +44,18 @@ def initDB():
                 photo_path VARCHAR(255) NOT NULL,   
                 value INTEGER NOT NULL,                 
                 status VARCHAR(50) NOT NULL DEFAULT 'pending', 
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
+            );
+        """
+        )
+        conn.execute(stmt)
+        # create table users
+        stmt = text(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,             
+                username TEXT NOT NULL,             
+                role VARCHAR(50) NOT NULL DEFAULT 'USER', 
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  
             );
         """

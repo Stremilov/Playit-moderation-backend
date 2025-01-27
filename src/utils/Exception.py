@@ -16,3 +16,16 @@ def handle_http_exceptions(func):
             )
 
     return wrapper
+
+
+NotFoundTasksExcept = HTTPException(
+    status_code=404, detail="Задача не найдена в базе данных"
+)
+NotFoundUsersExcept = HTTPException(
+    status_code=404, detail="Пользователь не найден в базе данных"
+)
+InvalidStatusExcept = HTTPException(status_code=400, detail="Invalid status")
+ForbiddenExcept = HTTPException(
+    status_code=status.HTTP_403_FORBIDDEN, detail="Недостаточно прав!"
+)
+UnAuthenticatedExcept = HTTPException(status_code=401, detail="Неавторизован")

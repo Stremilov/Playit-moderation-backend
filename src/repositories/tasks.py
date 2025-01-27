@@ -3,6 +3,8 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
+from utils.Exception import NotFoundExcept, InvalidStatusExcept
+
 
 class TaskRepository:
     @staticmethod
@@ -17,9 +19,18 @@ class TaskRepository:
         # в sqlite CURRENT_TIMESTAMP в Postgresql NOW()
         insert_query = text(
             """
-                    INSERT INTO tasks (description, photo_path, value, status, user_id, created_at)
-                    VALUES ( :description, :photo_path, :value, 'pending', :user_id, CURRENT_TIMESTAMP)
-                    RETURNING id, description, photo_path,  value, status, created_at
+                    INSERT INTO tasks
+                            (description,
+                            photo_path, value,
+                            status, user_id, created_at)
+                    VALUES
+                        ( :description, :photo_path,
+                        :value, 'pending', :user_id,
+                        CURRENT_TIMESTAMP)
+                    RETURNING
+                            id, description,
+                            photo_path,  value,
+                            status, created_at
                 """
         )
 
@@ -48,7 +59,7 @@ class TaskRepository:
     async def get_task_pending(session: Session):
         query = text(
             """
-                    SELECT 
+                    SELECT
                         id,
                         description,
                         photo_path,
@@ -87,10 +98,10 @@ class TaskRepository:
         ).fetchone()
 
         if not task:
-            raise HTTPException(status_code=404, detail="Task not found")
+            raise NotFoundExcept
 
         if status not in ["approved", "rejected"]:
-            raise HTTPException(status_code=400, detail="Invalid status")
+            raise InvalidStatusExcept
         else:
             session.execute(
                 text("DELETE FROM tasks WHERE id = :task_id"),
@@ -112,7 +123,7 @@ class TaskRepository:
         ).fetchone()
 
         if not task:
-            raise HTTPException(status_code=404, detail="Task not found")
+            raise NotFoundExcept
 
         session.execute(
             text("DELETE FROM tasks WHERE id = :task_id"), {"task_id": task_id}

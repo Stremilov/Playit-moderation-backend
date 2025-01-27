@@ -3,11 +3,8 @@ from sqlalchemy import text
 
 
 class UserRepository:
-    # TODO Переписать orm на чистый sql.
-    #  Все crud операции могут быть или непосредственно в коде иди в отдельной директории crud - сделано
     @staticmethod
     async def update_user_balance(session: Session, username: str, value: int):
-        # statement = update(Users).where(Users.username == username).values(balance=Users.balance + value)
         statement = text(
             "UPDATE users SET balance = balance + :value WHERE username = :username"
         )
@@ -26,3 +23,30 @@ class UserRepository:
         stmt = text("SELECT * FROM users WHERE id =:user_id")
         user = session.execute(stmt, {"user_id": user_id}).fetchone()
         return user
+
+    @staticmethod
+    async def get_user_by_name(username: str, session: Session):
+        stmt = text("SELECT * FROM users WHERE username =:username")
+        user = session.execute(stmt, {"username": username}).fetchone()
+        return user
+
+    @staticmethod
+    async def create_user(username: str, role: str, session: Session):
+        insert_query = text(
+            """
+                    INSERT INTO users
+                            (username,
+                            role, 
+                            created_at)
+                    VALUES
+                        ( :username,
+                          :role,
+                        CURRENT_TIMESTAMP)
+                """
+        )
+        session.execute(
+            insert_query,
+            {"username": username, "role": role},
+        )
+        session.commit()
+        return "Вы успешно зарегистрированы!"

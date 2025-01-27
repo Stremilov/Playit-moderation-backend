@@ -1,8 +1,9 @@
 from fastapi import HTTPException, Request, status
 from sqlalchemy.orm import Session
 
-from schemas.BaseRasponse import BaseResponse
+from schemas.BaseRasponse import BaseResponse, TaskBaseResponse
 from src.repositories.users import UserRepository
+from utils.Exception import handle_http_exceptions
 
 
 class UserService:
@@ -42,3 +43,19 @@ class UserService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Произошла непредвиденная ошибка: {e}",
             )
+
+    @staticmethod
+    @handle_http_exceptions
+    async def create_user(username: str, role: str, session: Session):
+        msg = await UserRepository.create_user(username, role, session)
+        return TaskBaseResponse(status="success", message=msg)
+
+    @staticmethod
+    @handle_http_exceptions
+    async def find_user_by_name(username: str, session: Session):
+        return await UserRepository.get_user_by_name(username, session)
+
+    @staticmethod
+    @handle_http_exceptions
+    async def find_user_by_id(user_id: int, session: Session):
+        return await UserRepository.get_user_by_id(user_id, session)
