@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from schemas.BaseRasponse import BaseResponse, TaskBaseResponse
 from src.repositories.users import UserRepository
-from utils.Exception import handle_http_exceptions
+from utils.exceptions import handle_http_exceptions
 
 
 class UserService:

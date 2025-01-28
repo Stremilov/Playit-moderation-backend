@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from schemas.BaseRasponse import TaskBaseResponse
 from schemas.tasks import TaskListRead, TaskRead
 from src.repositories.tasks import TaskRepository
-from utils.Exception import handle_http_exceptions
+from utils.exceptions import handle_http_exceptions
 from utils.uploaded_file import upload_file
 
 

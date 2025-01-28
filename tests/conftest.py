@@ -1,10 +1,9 @@
 import pytest
-
 from fastapi.testclient import TestClient
 
 from core.auth import create_encoded_access_token
-from tests.db_for_test import init_test_db, init_test_users, drop_all_table
 from main import app
+from tests.db_for_test import drop_all_table, init_test_db, init_test_users
 
 
 @pytest.fixture(autouse=True, scope="session")

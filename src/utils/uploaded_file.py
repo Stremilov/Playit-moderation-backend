@@ -5,7 +5,7 @@ import uuid
 from fastapi import UploadFile
 
 from core.config import UPLOAD_FOLDER
-from utils.Exception import handle_http_exceptions
+from utils.exceptions import handle_http_exceptions
 
 
 @handle_http_exceptions

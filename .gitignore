@@ -43,3 +43,4 @@ uploads
 core.db
 tests/tests.db
 tests.db
+test_image.png

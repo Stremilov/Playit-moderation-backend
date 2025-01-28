@@ -7,8 +7,11 @@ from sqlalchemy.orm import Session
 from core.config import SECRET_KEY
 from core.db import get_db_session
 from services.users import UserService
-from utils.Exception import (ForbiddenExcept, UnAuthenticatedExcept,
-                             handle_http_exceptions)
+from utils.exceptions import (
+    ForbiddenExcept,
+    UnAuthenticatedExcept,
+    handle_http_exceptions,
+)
 
 
 def create_encoded_access_token(
