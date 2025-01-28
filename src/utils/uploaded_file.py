@@ -1,7 +1,8 @@
 # загрузка медиа логика в сервисе
+# TODO сделай не только загрузку но и удаление файлов
 import uuid
 
-from fastapi import UploadFile, HTTPException, status
+from fastapi import UploadFile
 
 from core.config import UPLOAD_FOLDER
 from utils.Exception import handle_http_exceptions

@@ -1,9 +1,7 @@
-from fastapi import HTTPException
-
-from sqlalchemy.orm import Session
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 
-from utils.Exception import NotFoundExcept, InvalidStatusExcept
+from utils.Exception import InvalidStatusExcept, NotFoundTasksExcept
 
 
 class TaskRepository:
@@ -98,7 +96,7 @@ class TaskRepository:
         ).fetchone()
 
         if not task:
-            raise NotFoundExcept
+            raise NotFoundTasksExcept
 
         if status not in ["approved", "rejected"]:
             raise InvalidStatusExcept
@@ -123,7 +121,7 @@ class TaskRepository:
         ).fetchone()
 
         if not task:
-            raise NotFoundExcept
+            raise NotFoundTasksExcept
 
         session.execute(
             text("DELETE FROM tasks WHERE id = :task_id"), {"task_id": task_id}

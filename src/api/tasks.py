@@ -1,14 +1,12 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form
-
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 from sqlalchemy.orm import Session
 
 from api.responses import base_bad_response_for_endpoints_of_task
 from core.auth import get_current_moderator_user
 from schemas.BaseRasponse import TaskBaseResponse
-from schemas.tasks import TaskRead, TaskListRead
+from schemas.tasks import TaskListRead, TaskRead
 from src.core.db import get_db_session
 from src.services.tasks import TaskService
-
 
 router = APIRouter(
     prefix="/tasks", tags=["Tasks"], dependencies=[Depends(get_current_moderator_user)]

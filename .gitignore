@@ -40,3 +40,6 @@ Thumbs.db
 .idea
 db.db
 uploads
+core.db
+tests/tests.db
+tests.db

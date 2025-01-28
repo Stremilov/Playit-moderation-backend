@@ -1,9 +1,7 @@
-from sqlalchemy import (
-    create_engine,
-    text,
-)
-from sqlalchemy.orm import sessionmaker
 import logging
+
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 
 # Database configuration for connection
 # DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
@@ -19,17 +17,6 @@ def get_db_session() -> SessionLocal:
         yield session
     finally:
         session.close()
-
-
-"""
-Создаю регистрацию чисто для аутентификации по JWT po cookies on fastapi_users
-1.сделать модель
-2.сделать готового UserManager
-3.иницилизировать CookieTransport
-4.сделать функцию зависимость get_jwt_strategy
-5.auth_backend
-6. initial Fastapi_Users
-"""
 
 
 def initDB():

@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Request, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
-from core.auth import get_current_user, create_encoded_access_token
-from schemas.BaseRasponse import BaseResponse, UserCreateSchema, TaskBaseResponse
+from schemas.BaseRasponse import BaseResponse
 from src.api.responses import update_user_balance_responses
 from src.core.db import get_db_session
 from src.services.users import UserService

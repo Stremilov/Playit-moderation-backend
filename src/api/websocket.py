@@ -1,6 +1,5 @@
-from fastapi import APIRouter, WebSocket, Depends, WebSocketDisconnect, Request
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
-from fastapi.templating import Jinja2Templates
 
 from api.tasks import get_pending_tasks
 from core.db import get_db_session

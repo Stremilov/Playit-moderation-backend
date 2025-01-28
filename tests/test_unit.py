@@ -1,119 +1,119 @@
-import sys
-import os
-
-# Добавляем корневую папку проекта в sys.path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from unittest.mock import MagicMock, AsyncMock
+# доделать все юнит тесты раз начала???
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
-from src.repositories.tasks import TaskRepository
-from src.services.tasks import TaskService
+from repositories.tasks import TaskRepository
+from schemas.BaseRasponse import TaskBaseResponse
+from schemas.tasks import TaskListRead
+from services.tasks import TaskService
 
 
 @pytest.mark.asyncio
 async def test_create_task_unit_service():
-    mock_session = MagicMock(spec=Session)
-    mock_uploaded_file = MagicMock(spec=UploadFile)
-    mock_uploaded_file.filename = "test_file.png"
-
-    # Мокируем TaskRepository.create_task
-    mock_task_repo_create_task = AsyncMock(
-        return_value={
-            "id": 1,
-            "user_id": 1,
-            "description": "Test task",
-            "photo_path": "uploads/test_file.png",
-            "value": 100,
-            "status": "pending",
-        }
-    )
-
-    # Подменяем метод create_task в TaskRepository
-    TaskRepository.create_task = mock_task_repo_create_task
-
-    # Вызываем метод create_tasks
-    result = await TaskService.create_tasks(
-        user_id=1,
-        description="Test task",
-        uploaded_file=mock_uploaded_file,
-        value=100,
-        session=mock_session,
-    )
-
-    # Проверяем результат
-    assert result == {
-        "task": {
-            "id": 1,
-            "user_id": 1,
-            "description": "Test task",
-            "photo_path": "uploads/test_file.png",
-            "value": 100,
-            "status": "pending",
-        },
-        "massage": "Task create!",
-    }
-
-    # # Проверяем, что TaskRepository.create_task был вызван с правильными аргументами
-    # mock_task_repo_create_task.assert_called_once_with(
-    #     user_id=1,
-    #     description="Test task",
-    #     uploaded_file=mock_uploaded_file,
-    #     value=100,
-    #     session=mock_session,
-    # )
+    pass
 
 
 @pytest.mark.asyncio
 async def test_get_tasks_unit_service():
-    mock_session = MagicMock(spec=Session)
-    # Мокируем TaskRepository.create_task
-    mock_repo_get_task_pending = AsyncMock(
-        return_value={
-            "tasks": {
-                "id": 1,
-                "user_id": 1,
-                "description": "Test task",
-                "photo_path": "uploads/test_file.png",
-                "value": 100,
-                "status": "pending",
-            }
-        }
-    )
+    with patch(
+        "src.repositories.tasks.TaskRepository.get_task_pending",
+        new_callable=AsyncMock,
+    ) as mock_get_task_pending:
+        mock_task = MagicMock(
+            id=2,
+            description="test",
+            photo_path="uploads\\images\\2cacc5ae4d454332bc911604b4aebbbe_Screenshot_2.png",
+            value=10,
+            status="pending",
+            created_at="2025-01-27T21:22:46",
+        )
+        mock_get_task_pending.return_value = [mock_task]
 
-    # Подменяем метод create_task в TaskRepository
-    TaskRepository.get_task_pending = mock_repo_get_task_pending
-    result = await TaskService.get_task_pending(mock_session)
-    assert len(result) == 1
-    mock_repo_get_task_pending.assert_called_once_with(session=mock_session)
+        result = await TaskService.get_task_pending(session=MagicMock(spec=Session))
+        assert isinstance(result, TaskListRead)
+        assert result.status == "success"
+        assert result.message == "Все задачи со статусом PENDING"
+        assert len(result.task) == 1
+        assert result.task[0].id == 2
+        assert result.task[0].description == "test"
+        assert (
+            result.task[0].photo_path
+            == "uploads\\images\\2cacc5ae4d454332bc911604b4aebbbe_Screenshot_2.png"
+        )
+        mock_get_task_pending.assert_awaited_once()
 
 
 @pytest.mark.asyncio
 async def test_update_task_unit_service():
-    mock_session = MagicMock(spec=Session)
-    mock_task_repo_update = AsyncMock(
-        return_value={"message": "Task status updated successfully"}
-    )
-    # Подменяем метод create_task в TaskRepository
-    TaskRepository.update_task = mock_task_repo_update
-    result = await TaskService.update_task()
+    with patch(
+        "src.repositories.tasks.TaskRepository.update_task",
+        new_callable=AsyncMock,
+    ) as mock_update_task:
+        mock_update_task.return_value = "Task status updated successfully"
+
+        result = await TaskService.update_task(
+            task_id=2, status="approved", session=MagicMock(spec=Session)
+        )
+
+        assert isinstance(result, TaskBaseResponse)
+        assert result.status == "success"
+        assert result.message == "Task status updated successfully"
+        mock_update_task.assert_awaited_once()
 
 
-#
-#
-# @pytest.mark.asyncio
-# async def test_delete_task_unit_service():
-#
+@pytest.mark.asyncio
+async def test_delete_task_unit_service():
+    with patch(
+        "src.repositories.tasks.TaskRepository.delete_task",
+        new_callable=AsyncMock,
+    ) as mock_delete_task:
+        mock_delete_task.return_value = "Task deleted successfully"
+        result = await TaskService.delete_task(
+            task_id=2, session=MagicMock(spec=Session)
+        )
+        assert isinstance(result, TaskBaseResponse)
+        assert result.status == "success"
+        assert result.message == "Task deleted successfully"
+        mock_delete_task.assert_awaited_once()
+
+
 #
 # @pytest.mark.asyncio
 # async def test_create_task_unit_repository():
 #
-# @pytest.mark.asyncio
-# async def test_get_task_unit_repository():
-#
+@pytest.mark.asyncio
+async def test_get_task_unit_repository():
+    mock_session = MagicMock(spec=Session)
+    mock_task = MagicMock(
+        id=2,
+        description="test",
+        photo_path="uploads\\images\\2cacc5ae4d454332bc911604b4aebbbe_Screenshot_2.png",
+        value=10,
+        status="pending",
+        created_at="2025-01-27T21:22:46",
+    )
+
+    mock_session.execute.return_value.fetchall.return_value = [mock_task]
+
+    # Вызываем метод репозитория
+    tasks = await TaskRepository.get_task_pending(session=mock_session)
+
+    assert tasks == [
+        {
+            "id": 2,
+            "description": "test",
+            "photo_path": "uploads\\images\\2cacc5ae4d454332bc911604b4aebbbe_Screenshot_2.png",
+            "value": 10,
+            "status": "pending",
+            "created_at": "2025-01-27T21:22:46",
+        }
+    ]
+    # Проверяем, что execute был вызван
+    mock_session.execute.assert_called_once()
+
+
 # @pytest.mark.asyncio
 # async def test_update_task_unit_repository():
 #

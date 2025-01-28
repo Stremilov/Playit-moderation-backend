@@ -1,18 +1,14 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
-
-from fastapi import Request, HTTPException, status, Depends
-from jwt import encode, decode, PyJWTError
+from fastapi import Depends, HTTPException, Request, status
+from jwt import PyJWTError, decode, encode
 from sqlalchemy.orm import Session
 
 from core.config import SECRET_KEY
 from core.db import get_db_session
 from services.users import UserService
-from utils.Exception import (
-    ForbiddenExcept,
-    handle_http_exceptions,
-    UnAuthenticatedExcept,
-)
+from utils.Exception import (ForbiddenExcept, UnAuthenticatedExcept,
+                             handle_http_exceptions)
 
 
 def create_encoded_access_token(
@@ -21,7 +17,7 @@ def create_encoded_access_token(
     algorithm: str = "HS256",
 ):
     to_encode = payload.copy()
-    expire = datetime.now(timezone.utc) + timedelta(minutes=3)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=5)
     to_encode.update(exp=expire)
 
     encoded = encode(to_encode, secret_key, algorithm=algorithm)
