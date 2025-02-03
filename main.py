@@ -5,7 +5,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from src.api.routers import all_routers
-from src.core.db import initDB
+from src.core.database.db import initDB
 
 logging.basicConfig(
     level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"

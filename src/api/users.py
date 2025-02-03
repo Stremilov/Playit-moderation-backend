@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
-from schemas.BaseRasponse import BaseResponse
+from src.core.schemas.BaseRasponse import BaseResponse
 from src.api.responses import update_user_balance_responses
-from src.core.db import get_db_session
-from src.services.users import UserService
+from src.core.database.db import get_db_session
+from src.core.services.users import UserService
 
 router = APIRouter(prefix="/users", tags=["Users"])
 

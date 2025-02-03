@@ -18,7 +18,6 @@ def handle_http_exceptions(func):
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Произошла непредвиденная ошибка: {e}",
             )
-
     return wrapper
 
 

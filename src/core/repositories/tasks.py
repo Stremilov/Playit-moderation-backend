@@ -1,7 +1,7 @@
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from utils.exceptions import InvalidStatusExcept, NotFoundTasksExcept
+from src.core.utils.exceptions import InvalidStatusExcept, NotFoundTasksExcept
 
 
 class TaskRepository:

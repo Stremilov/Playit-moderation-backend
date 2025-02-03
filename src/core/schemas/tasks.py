@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from schemas.BaseRasponse import TaskBaseResponse
+from src.core.schemas.BaseRasponse import TaskBaseResponse
 
 
 class StatusEnum(enum.Enum):

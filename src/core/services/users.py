@@ -1,9 +1,9 @@
 from fastapi import HTTPException, Request, status
 from sqlalchemy.orm import Session
 
-from schemas.BaseRasponse import BaseResponse, TaskBaseResponse
-from src.repositories.users import UserRepository
-from utils.exceptions import handle_http_exceptions
+from src.core.schemas.BaseRasponse import BaseResponse, TaskBaseResponse
+from src.core.repositories.users import UserRepository
+from src.core.utils.exceptions import handle_http_exceptions
 
 
 class UserService:
